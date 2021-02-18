@@ -176,6 +176,7 @@ int main(int argc,char* argv[])
 	{
 		enqueue(&q,pop(&s));
 	}
+	printf("Final Output:\n");
 	print(&q);
 	return 0;
 }
