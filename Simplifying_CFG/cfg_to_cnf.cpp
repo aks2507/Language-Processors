@@ -7,7 +7,10 @@
 using namespace std;
 
 /* A non-terminal X is nullable if you can generate the empty word from it. */
-/* A non-terminal X or a string is non-generating if it doesn't lead to a string of terminal symbols. */
+
+/* A non-terminal X is generating, i.e., X =>* w, where w ϵ L(G) and w in Vt*,
+   this means that the string leads to a string of terminal symbols. */
+
 /* A non-terminal X is reachable If there is a derivation S =>* αXβ =>* w, w ϵ L(G),
    for same α and β, then X is said to be reachable. */
 
