@@ -326,38 +326,38 @@ void remove_unit_productions()
             {
                 if(a[i].der[j].length()!=1)
                 {
-                    tab1[a[i].var].push_back(a[i].der[j]);
+                    tab1[a[i].var].push_back(a[i].der[j]); //RHS size>1, no not unit prod
                 }
                 else
                 {
                     if(m.find(a[i].der[j][0])==m.end())
-                        tab1[a[i].var].push_back(a[i].der[j]);
+                        tab1[a[i].var].push_back(a[i].der[j]); //Even if size is 1, it doesn't derive anything
                     else
-                        tab2[a[i].var].push_back(a[i].der[j]);
+                        tab2[a[i].var].push_back(a[i].der[j]); //RHS size = 1 and it derives something
                 }
             }
 	}
-	set<char> dic;
+	set<char> derivables;
 	for(int i=0;i<a.size();i++)
 	{
 		if(!a[i].non_generating && !a[i].non_reachable && tab2.find(a[i].var)!=tab2.end())
 		{
 			a[i].der.clear();
 			add_productions(a[i].der,tab1[a[i].var]);
-			dic.insert(a[i].var);
+			derivables.insert(a[i].var);
 			for(int j=0;j<tab2[a[i].var].size();j++)
 			{
-				if(dic.find(tab2[a[i].var][j][0])==dic.end())
+				if(derivables.find(tab2[a[i].var][j][0])==derivables.end())
 				{
 					add_productions(a[i].der,tab1[tab2[a[i].var][j][0]]);
 					for(int k=0;k<tab2[tab2[a[i].var][j][0]].size();k++)
 						tab2[a[i].var].push_back(tab2[tab2[a[i].var][j][0]][k]);
-					dic.insert(tab2[a[i].var][j][0]);
+					derivables.insert(tab2[a[i].var][j][0]);
 				}
 			}
 			sort(a[i].der.begin(),a[i].der.end());
 			remove_duplicates(a[i].der);
-			dic.clear();
+			derivables.clear();
 		}
 	}
 }
@@ -408,9 +408,9 @@ void show()
 		if(a[i].non_reachable||a[i].non_generating)
 			continue;
 		if(a[i].var>='A'&&a[i].var<='Z')
-		cout<<a[i].var<<" :: ";
+		    cout<<a[i].var<<" :: ";
 		else
-		cout<<(char)(a[i].var-'a'+'A')<<"\'"<<" :: ";
+		    cout<<(char)(a[i].var-'a'+'A')<<"\'"<<" :: ";
 		for(int j=0;j<a[i].der.size();j++)
 		{
 			cout<<a[i].der[j]<<" | ";
