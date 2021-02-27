@@ -371,10 +371,10 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    3,    1,    1,    1,    4,    5,    1,    1,
-        1,    6,    7,    1,    8,    1,    9,   10,   10,   10,
-       10,   10,   10,   10,   10,   10,   10,    1,    1,   11,
-       12,   13,    1,   14,    1,    1,    1,    1,    1,    1,
+        1,    1,    3,    1,    4,    1,    5,    6,    1,    1,
+        1,    7,    8,    1,    9,    1,   10,   11,   11,   11,
+       11,   11,   11,   11,   11,   11,   11,    1,    1,   12,
+       13,   14,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,   15,    1,    1,    1,    1,    1,    1,
@@ -406,8 +406,8 @@ static const YY_CHAR yy_meta[17] =
 
 static const flex_int16_t yy_base[15] =
     {   0,
-        0,    0,   23,   24,   24,   10,   24,   11,    8,    7,
-        6,   24,    7,   24
+        0,    0,   23,   24,   24,    9,   24,   10,    7,    6,
+        5,   24,    6,   24
     } ;
 
 static const flex_int16_t yy_def[15] =
@@ -418,8 +418,8 @@ static const flex_int16_t yy_def[15] =
 
 static const flex_int16_t yy_nxt[41] =
     {   0,
-        4,    5,    6,    7,    7,    7,    7,    7,    7,    8,
-        9,   10,   11,    7,    7,    7,   13,   12,   12,   12,
+        4,    5,    6,    7,    7,    7,    7,    7,    7,    7,
+        8,    9,   10,   11,    7,    7,   13,   12,   12,   12,
        13,   12,   14,    3,   14,   14,   14,   14,   14,   14,
        14,   14,   14,   14,   14,   14,   14,   14,   14,   14
     } ;
@@ -681,7 +681,7 @@ YY_DECL
 		}
 
 	{
-#line 19 "eval.l"
+#line 22 "eval.l"
 
 #line 687 "lex.yy.c"
 
@@ -742,22 +742,22 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 20 "eval.l"
+#line 23 "eval.l"
 {string str(yytext); parse_operand(str);}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 21 "eval.l"
+#line 24 "eval.l"
 {string str(yytext); parse_operator(str);}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 22 "eval.l"
-;
+#line 25 "eval.l"
+{cout<<"Error: Expression not found";exit(0);};
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 23 "eval.l"
+#line 26 "eval.l"
 ECHO;
 	YY_BREAK
 #line 764 "lex.yy.c"
@@ -1765,7 +1765,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 23 "eval.l"
+#line 26 "eval.l"
 
 
 void set_preced() //mapping the precedance
@@ -1775,7 +1775,7 @@ void set_preced() //mapping the precedance
     preced["<="]=preced["<"]=preced[">"]=preced[">="]=1;
     preced["+"]=preced["-"]=3;
     preced["*"]=preced["/"]=preced["%"]=4;
-    preced["@"]=6;
+    preced["#"]=6;
 }
 
 int str_to_decimal(string str)
@@ -1810,8 +1810,10 @@ void parse_operator(string str) //pop out two fron the stack and evaluate
             opd.pop();
             cout<<"poped: "<<op1<<" and "<<op2<<"\n";
             cout<<"Evaluating: "<<op2<<top<<op1<<"\n";
+            
             opd.push(eval(op2,op1,top));
             cout<<"Pushed: "<<eval(op2,op1,top)<<" in operand stack\n";
+            
             opr.pop();
             cout<<"Poped: "<<top<<" from operator stack\n";
         }
@@ -1840,7 +1842,7 @@ int eval(int x,int y,string s) //evaluation of arithmetic operations
         return x&y;
     else if(s=="^")
         return x^y;
-    else if(s=="@")
+    else if(s=="#")
         return pow(x,y);
     else if(s=="==")
         return (x==y);
@@ -1855,7 +1857,10 @@ int eval(int x,int y,string s) //evaluation of arithmetic operations
     else if(s=="!=")
         return x!=y;
     else
-        return INT_MAX;
+    {
+        cout<<"Error in operation: "<<s<<"\nCheck your expression!";
+        exit(0);
+    }
 }
 
 int parse_whatever_remains_in_stack() //After expression ends, parse whatever is left in stack
@@ -1874,6 +1879,7 @@ int parse_whatever_remains_in_stack() //After expression ends, parse whatever is
 
         opd.push(eval(op2,op1,top));
         cout<<"Pushed: "<<eval(op2,op1,top)<<" in operand stack\n";
+        
         opr.pop();
         cout<<"Poped: "<<top<<" from operator stack\n";
     }
@@ -1899,5 +1905,5 @@ int main()
     close(fileno(yyout));
 }
 /*
-24*34+4@3-12/4==1|6^7
+24*34+4#3-12/4==1|6^7
 */
