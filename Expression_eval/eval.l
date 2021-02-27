@@ -24,12 +24,11 @@
 
 void set_preced() //mapping the precedance
 {
-    preced["|"]=preced["&"]=2;
+    preced["|"]=preced["&"]=preced["^"]=2;
     preced["=="]=preced["!="]=0;
     preced["<="]=preced["<"]=preced[">"]=preced[">="]=1;
     preced["+"]=preced["-"]=3;
     preced["*"]=preced["/"]=preced["%"]=4;
-    preced["^"]=5;
     preced["@"]=6;
 }
 
@@ -64,7 +63,7 @@ void parse_operator(string str) //pop out two fron the stack and evaluate
             float op2=opd.top();
             opd.pop();
             cout<<"poped: "<<op1<<" and "<<op2<<"\n";
-            cout<<"Evaluating: "<<op1<<top<<op2<<"\n";
+            cout<<"Evaluating: "<<op2<<top<<op1<<"\n";
             opd.push(eval(op2,op1,top));
             cout<<"Pushed: "<<eval(op2,op1,top)<<" in operand stack\n";
             opr.pop();
@@ -125,7 +124,7 @@ int parse_whatever_remains_in_stack() //After expression ends, parse whatever is
         opd.pop();
         
         cout<<"poped: "<<op1<<" and "<<op2<<"\n";
-        cout<<"Evaluating: "<<op1<<top<<op2<<"\n";
+        cout<<"Evaluating: "<<op2<<top<<op1<<"\n";
 
         opd.push(eval(op2,op1,top));
         cout<<"Pushed: "<<eval(op2,op1,top)<<" in operand stack\n";
