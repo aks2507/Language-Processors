@@ -351,8 +351,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 7
-#define YY_END_OF_BUFFER 8
+#define YY_NUM_RULES 4
+#define YY_END_OF_BUFFER 5
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -362,26 +362,26 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[15] =
     {   0,
-        0,    0,    8,    6,    5,    3,    6,    2,    6,    4,
-        2,    1,    0,    0
+        0,    0,    5,    3,    4,    3,    2,    1,    2,    3,
+        2,    2,    1,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    4,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    5,    5,    5,
-        5,    5,    5,    5,    5,    5,    5,    1,    1,    1,
-        1,    1,    1,    1,    6,    6,    6,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        1,    1,    1,    1,    1,    1,    6,    6,    6,    6,
+        1,    1,    3,    1,    1,    1,    4,    5,    1,    1,
+        1,    6,    7,    1,    8,    1,    9,   10,   10,   10,
+       10,   10,   10,   10,   10,   10,   10,    1,    1,   11,
+       12,   13,    1,   14,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,   15,    1,    1,    1,    1,    1,    1,
 
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6,    6,    1,    7,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,   16,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -398,35 +398,38 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static const YY_CHAR yy_meta[8] =
+static const YY_CHAR yy_meta[17] =
     {   0,
-        1,    1,    1,    1,    2,    3,    4
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1
     } ;
 
-static const flex_int16_t yy_base[17] =
+static const flex_int16_t yy_base[15] =
     {   0,
-        0,    0,   16,   17,   17,   17,   11,    9,    0,    9,
-        7,    0,    0,   17,    6,    7
+        0,    0,   23,   24,   24,   10,   24,   11,    8,    7,
+        6,   24,    7,   24
     } ;
 
-static const flex_int16_t yy_def[17] =
+static const flex_int16_t yy_def[15] =
     {   0,
-       14,    1,   14,   14,   14,   14,   14,   14,   15,   14,
-       14,   16,   15,    0,   14,   14
+       14,    1,   14,   14,   14,   14,   14,   14,   14,   14,
+       14,   14,   14,    0
     } ;
 
-static const flex_int16_t yy_nxt[25] =
+static const flex_int16_t yy_nxt[41] =
     {   0,
-        4,    5,    6,    7,    8,    9,    9,   12,   12,   13,
-       13,   11,   10,   11,   10,   14,    3,   14,   14,   14,
-       14,   14,   14,   14
+        4,    5,    6,    7,    7,    7,    7,    7,    7,    8,
+        9,   10,   11,    7,    7,    7,   13,   12,   12,   12,
+       13,   12,   14,    3,   14,   14,   14,   14,   14,   14,
+       14,   14,   14,   14,   14,   14,   14,   14,   14,   14
     } ;
 
-static const flex_int16_t yy_chk[25] =
+static const flex_int16_t yy_chk[41] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,   15,   15,   16,
-       16,   11,   10,    8,    7,    3,   14,   14,   14,   14,
-       14,   14,   14,   14
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,   13,   11,   10,    9,
+        8,    6,    3,   14,   14,   14,   14,   14,   14,   14,
+       14,   14,   14,   14,   14,   14,   14,   14,   14,   14
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -443,32 +446,25 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "encrypt.l"
-#line 2 "encrypt.l"
-   /*
-    Write a program to encrypt the text using lex. Copy a text file with some predefined words as
-    special and encrypt the text as follows:
-    ● Special words have to be rotated right by two positions (cyclic) and written right to left.
-    ● Other English words should be encrypted by replacing each character by ASCII +
-    k-cyclic and words need to be written in reverse.
-    ● Each number should be replaced by a new number which is generated by swapping left
-    half and right half of the number. If the number has odd number of digits, the middle digit
-    should be at the same place
-    ● All other characters have to be retained as it is except the sequence of whitespaces
-    which need to be replaced by single space.
-   */
-   #include<bits/stdc++.h>
-   #include<fstream>
-   using namespace std;
-   ofstream fout;
-   set<string>key; //to store all the keywords
-   void handle_words(char* inp_string);
-   void other_text_non_recog(char* inp_string);
-   void handle_numbers(char* inp_string);
-   void handle_spaces(char* inp_string);
-   void printset(set<string> s);
-#line 471 "lex.yy.c"
-#line 472 "lex.yy.c"
+#line 1 "eval.l"
+#line 2 "eval.l"
+    #include <bits/stdc++.h>
+    #include<string>
+    using namespace std;
+
+    stack<int> opd;
+    stack<string> opr;
+    unordered_map<string,int> preced;
+
+    void set_preced();
+    int str_to_decimal(string);
+    int parse_whatever_remains_in_stack();
+    void parse_operand(string);
+    void parse_operator(string);
+    int eval(int,int,string);
+    
+#line 467 "lex.yy.c"
+#line 468 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -685,9 +681,9 @@ YY_DECL
 		}
 
 	{
-#line 29 "encrypt.l"
+#line 19 "eval.l"
 
-#line 691 "lex.yy.c"
+#line 687 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -720,7 +716,7 @@ yy_match:
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 17 );
+		while ( yy_base[yy_current_state] != 24 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -746,38 +742,25 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 30 "encrypt.l"
-handle_words(yytext);
+#line 20 "eval.l"
+{string str(yytext); parse_operand(str);}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 31 "encrypt.l"
-handle_numbers(yytext);
+#line 21 "eval.l"
+{string str(yytext); parse_operator(str);}
 	YY_BREAK
 case 3:
-/* rule 3 can match eol */
 YY_RULE_SETUP
-#line 32 "encrypt.l"
-cout<<"\n";
+#line 22 "eval.l"
+;
 	YY_BREAK
 case 4:
-#line 34 "encrypt.l"
-case 5:
 YY_RULE_SETUP
-#line 34 "encrypt.l"
-handle_spaces(yytext);
-	YY_BREAK
-case 6:
-YY_RULE_SETUP
-#line 35 "encrypt.l"
-other_text_non_recog(yytext);
-	YY_BREAK
-case 7:
-YY_RULE_SETUP
-#line 36 "encrypt.l"
+#line 23 "eval.l"
 ECHO;
 	YY_BREAK
-#line 781 "lex.yy.c"
+#line 764 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1782,122 +1765,140 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 36 "encrypt.l"
+#line 23 "eval.l"
 
 
-void printset(set<string> s)
+void set_preced() //mapping the precedance
 {
-    set<string>::iterator it;
-    for(it=s.begin();it!=s.end();it++)
-    {
-        cout<<*it<<" ";
-    }
-    cout<<"\n";
+    preced["|"]=preced["&"]=2;
+    preced["=="]=preced["!="]=0;
+    preced["<="]=preced["<"]=preced[">"]=preced[">="]=1;
+    preced["+"]=preced["-"]=3;
+    preced["*"]=preced["/"]=preced["%"]=4;
+    preced["^"]=5;
+    preced["@"]=6;
 }
 
-void handle_words(char* inp_string)
+int str_to_decimal(string str)
 {
-	string s(inp_string);
-    if(s.length()<=2) 
+    int num=0,n=str.length(),i=n-1;
+    while(i>=0)
     {
-       cout<<s;
-       return;
+        num+=(str[i]-'0')*pow(10,n-1-i);
+        i--;
     }
-	if(key.find(s)!=key.end()) //right rotate
-	{
-		string str="";
-        char a=s[s.length()-1];
-        char b=s[s.length()-2];
-		for(int i=s.length();i>=2;i--)
-		{
-			s[i]=s[i-2];
-		}
-		s[0]=b;
-        s[1]=a;
-    
-		reverse(s.begin(),s.end());
-		cout<<s;
-	}
-	else //k-cyclic rotation
-	{
-        int k=3;
-        string str="";
-		
-		for(int i=0;i<s.length();i++)
-		{
-			str+=char(s[i]+k);
-		}
-		reverse(str.begin(),str.end());
-		cout<<str;
-	}
+    return num;
 }
 
-void handle_numbers(char* inp_string)
+void parse_operand(string str) // put in stack
 {
-	string s(inp_string);
-	int len = s.length();
-	int mid = len/2;
-    string firstHalf="", secHalf="", mid_part="";
-    if(len%2 == 0)
-    {
-        firstHalf = s.substr(0, mid);
-	    secHalf = s.substr(mid, mid);
-        secHalf += firstHalf;
-    }
-	else
-    {
-        firstHalf = s.substr(0, mid);
-        mid_part=s.substr(mid,1);
-	    secHalf = s.substr(mid+1, mid);
-        secHalf += mid_part;
-        secHalf += firstHalf;
-    }
-	cout<<secHalf;
+    cout<<"Putting "<<str<<" in operand stack\n";
+    int num=str_to_decimal(str);
+    opd.push(num);
 }
 
-void other_text_non_recog(char* inp_string)
+void parse_operator(string str) //pop out two fron the stack and evaluate
 {
-	string s(inp_string),str="";
-	for(int i=0;i<s.length();)
-	{
-	   str+=s[i++];	
-       while(i<s.length() && s[i]==' ')
-       {
-           i++;
-       }
-
-	}
-    cout<<str;
-}
-void handle_spaces(char* inp_string)
-{
-    string s(inp_string),str="";
-    for(int i=0;i<s.length();i++)
+    cout<<"Parsing new operator\n";
+    while(!opr.empty())
     {
-        if(i==0)
-            str+=s[i];
+        string top=opr.top();
+        if(preced[top]>=preced[str])
+        {
+            float op1=opd.top();
+            opd.pop();
+            float op2=opd.top();
+            opd.pop();
+            cout<<"poped: "<<op1<<" and "<<op2<<"\n";
+            cout<<"Evaluating: "<<op1<<top<<op2<<"\n";
+            opd.push(eval(op2,op1,top));
+            cout<<"Pushed: "<<eval(op2,op1,top)<<" in operand stack\n";
+            opr.pop();
+            cout<<"Poped: "<<top<<" from operator stack\n";
+        }
         else
-            continue;
+            break;
     }
-    //cout<<str<<str.length()<<" ";
-    cout<<str;
+    cout<<"Pushed new operator: "<<str<<" in operator stack\n";
+    opr.push(str);
+}
+
+int eval(int x,int y,string s) //evaluation of arithmetic operations
+{
+    if(s=="+")
+        return x+y;
+    else if(s=="-")
+        return x-y;
+    else if(s=="*")
+        return x*y;
+    else if(s=="/")
+        return x/y;
+    else if(s=="%")
+        return x%y;
+    else if(s=="|")
+        return x|y;
+    else if(s=="&")
+        return x&y;
+    else if(s=="^")
+        return x^y;
+    else if(s=="@")
+        return pow(x,y);
+    else if(s=="==")
+        return (x==y);
+    else if(s==">")
+        return x>y;
+    else if(s=="<")
+        return x<y;
+    else if(s==">=")
+        return x>=y;
+    else if(s=="<=")
+        return x<=y;
+    else if(s=="!=")
+        return x!=y;
+    else
+        return INT_MAX;
+}
+
+int parse_whatever_remains_in_stack() //After expression ends, parse whatever is left in stack
+{
+    while(!opr.empty())
+    {
+        string top=opr.top();
+        
+        float op1=opd.top();
+        opd.pop();
+        float op2=opd.top();
+        opd.pop();
+        
+        cout<<"poped: "<<op1<<" and "<<op2<<"\n";
+        cout<<"Evaluating: "<<op1<<top<<op2<<"\n";
+
+        opd.push(eval(op2,op1,top));
+        cout<<"Pushed: "<<eval(op2,op1,top)<<" in operand stack\n";
+        opr.pop();
+        cout<<"Poped: "<<top<<" from operator stack\n";
+    }
+    return opd.top();
 }
 
 int main()
 {
-  	ifstream fin;
-  	fin.open("keywords.txt");
-  	string s="";
-  	while(fin)
-  	{
-    	getline(fin,s);
-        //cout<<s<<endl;
-     	key.insert(s);
-  	}
-    //printset(key);
-  	fin.close();
-  	yyin=fopen("sample.txt","r");
-	yylex();
-    cout<<"\n";
-    return 0;
+    yyin=fopen("input.txt","r");
+    yyout=fopen("output.txt","w");
+    
+    set_preced();
+    
+    yylex();
+    
+    int ans=parse_whatever_remains_in_stack();
+    
+    fprintf(yyout,"%d",ans);
+    
+    cout<<"The final answer is = "<<ans<<"\n";
+    
+    close(fileno(yyin));
+    close(fileno(yyout));
 }
+/*
+24*34+4@3-12/4==1|6^7
+*/

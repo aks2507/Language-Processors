@@ -12,6 +12,7 @@ int main()
     if(c>100) 
         cout<<"Century"<<endl;
     cout<<"Sum is:"<<c<<endl;
+    cout<<283236432786<<"   "<<456932154<<"\n";
     int i=5;
     while(i--)
     {

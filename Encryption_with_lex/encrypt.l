@@ -23,7 +23,7 @@
    void printset(set<string> s);
 %}
 
-alpha [a-z|A-Z]
+alpha [a-z|A-Z][a-zA-Z0-9]
 digit [0-9]
 
 %%
@@ -53,17 +53,20 @@ void handle_words(char* inp_string)
        cout<<s;
        return;
     }
-	if(key.find(s)!=key.end()) //left rotate
+	if(key.find(s)!=key.end()) //right rotate
 	{
 		string str="";
-		for(int i=2;i<s.length();i++)
+        char a=s[s.length()-1];
+        char b=s[s.length()-2];
+		for(int i=s.length();i>=2;i--)
 		{
-			str+=s[i];
+			s[i]=s[i-2];
 		}
-		str+=s[s.length()-2];
-		str+=s[s.length()-1];
-		reverse(str.begin(),str.end());
-		cout<<str;
+		s[0]=b;
+        s[1]=a;
+    
+		reverse(s.begin(),s.end());
+		cout<<s;
 	}
 	else //k-cyclic rotation
 	{
@@ -84,9 +87,21 @@ void handle_numbers(char* inp_string)
 	string s(inp_string);
 	int len = s.length();
 	int mid = len/2;
-	string firstHalf = s.substr(0, mid);
-	string secHalf = s.substr(mid, len);
-	secHalf += firstHalf;
+    string firstHalf="", secHalf="", mid_part="";
+    if(len%2 == 0)
+    {
+        firstHalf = s.substr(0, mid);
+	    secHalf = s.substr(mid, mid);
+        secHalf += firstHalf;
+    }
+	else
+    {
+        firstHalf = s.substr(0, mid);
+        mid_part=s.substr(mid,1);
+	    secHalf = s.substr(mid+1, mid);
+        secHalf += mid_part;
+        secHalf += firstHalf;
+    }
 	cout<<secHalf;
 }
 
