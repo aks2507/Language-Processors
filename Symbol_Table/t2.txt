@@ -1,0 +1,4 @@
+Computer Science is a vast field of study
+Language Processors and Compiler Design is a part of it
+A computer has a lot of processes running at a time
+One can't fathom the complexity behind everything
