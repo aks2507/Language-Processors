@@ -530,27 +530,27 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "symtab.l"
 #line 3 "symtab.l"
-struct ref
-{
-	char* filename;
-	int line;
-	struct ref* next;
-};
-struct Symtab
-{
-	char* word;
-	struct ref* ptr;
-	int num;
-};
-#define NHASH 211
-struct Symtab hashtab[NHASH];
-int hash(char* word);
-int insert(char* word);
-char* curr_file;
-void add_end(struct ref** ptr,char* filename,int line);
-void init();
-void show();
-int num_elements;
+    struct ref
+    {
+        char* filename;
+        int line;
+        struct ref* next;
+    };
+    struct Symtab
+    {
+        char* word;
+        struct ref* ptr;
+        int num;
+    };
+    #define NHASH 211
+    struct Symtab hashtab[NHASH];
+    int hash(char* word);
+    int insert(char* word);
+    char* curr_file;
+    void add_end(struct ref** ptr,char* filename,int line);
+    void init();
+    void show();
+    int num_elements;
 #line 555 "lex.yy.c"
 #line 556 "lex.yy.c"
 
