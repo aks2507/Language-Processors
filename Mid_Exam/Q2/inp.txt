@@ -1,0 +1,30 @@
+#include<iostream>
+using namespace std;
+
+void Hiii(string h)
+{
+    printf("Helllo\n");
+    return;
+}
+
+int main()
+{
+    /*This is a comment*/
+    Hiii(hello);
+    cout<<"Hello World\n";
+    int a[10];
+    char c='a';
+    //This is another comment
+    while(1)
+    {
+        cout<<"This is a program\n";
+        cin>>q;
+        int k=-10;
+        int j=24;
+        long l=10e10;
+        double m=2.635
+        if(q<=3)
+            break;
+    }
+    return 0;
+}
