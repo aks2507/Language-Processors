@@ -1,20 +1,20 @@
 c = 30
 d = 40
-_l0: _t0 = d * 9
-_t1 = _t0 + 10
-if c > _t1 goto _l1
-_t2 = 0
-goto _l2
-_l1: _t2 = 1
-_l2: if c < 40 goto _l3
-_t3 = 0
-goto _l4
-_l3: _t3 = 1
-_l4: _t4 = _t2 and _t3
-if _t4 == 0 goto _l5
-_t5 = c + 30
-c = _t5
-_t6 = d * 80
-d = _t6
-goto _l0
-_l5: halt
+L-0: T-0 = d * 9
+T-1 = T-0 + 10
+IF c > T-1 GOTO L-1
+T-2 = 0
+GOTO L-2
+L-1: T-2 = 1
+L-2: IF c < 40 GOTO L-3
+T-3 = 0
+GOTO L-4
+L-3: T-3 = 1
+L-4: T-4 = T-2 AND T-3
+IF T-4 == 0 GOTO L-5
+T-5 = c + 30
+c = T-5
+T-6 = d * 80
+d = T-6
+GOTO L-0
+L-5: halt

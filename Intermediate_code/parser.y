@@ -1,199 +1,280 @@
 %{
-	#include <bits/stdc++.h>
+	#include <iostream>
+	#include <algorithm>
+	#include <string>
+	#include <stack>
+	#include <fstream>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#include <map>
+	#include <vector>
 	using namespace std;
 	extern int yylineno;
 	extern int yylex();
 	extern FILE* yyin;
 
 	void yyerror (const char *s) {
-   		fprintf (stderr, "%s\n", s);
+   		fprintf(stderr, "%s\n", s);
  	}	
 
- 	struct symbol_t{
+	//The symbol table structure that stores the line number and type
+ 	struct sym_table_entry
+	{
  		int lineno;
  		string type;
  	};
- 	struct place_t{
+	
+	//The structure that stores the 
+ 	struct place_of_var
+	{
  		char place[10];
  	};
 
- 	map<string, vector<symbol_t> > sym_table;
- 	int labelctr = 0, tempctr = 0;
+ 	map<string, vector<sym_table_entry> > sym_table;       //The symbol table
+ 	int label_count = 0, temp_variable_count = 0;
 
- 	string new_label(){
-		char tmp[10];
-		sprintf(tmp, "%d", labelctr); labelctr++;
-		string s(tmp);
-		return "_l" + s;  
+	/*
+	*
+	*
+	This function creates a new label
+	We create a new character array, store the present counter of labels
+	in it and increase the global label counter.
+	Here, I typecast temp into a string and return a string depending on the counter
+	globally at that point.
+	*
+	*/
+ 	string new_label()
+	{
+		char temp[10];
+		sprintf(temp, "%d", label_count); 
+		label_count++;
+		string s(temp);
+		return "L-" + s;  
 	}
 
-	string new_temp(){
-		char tmp[10];
-		sprintf(tmp, "%d", tempctr); tempctr++;
-		string s(tmp);
-		return "_t" + s;  
+	/*
+	*
+	*
+	This function creates a new temporary variable
+	We create a new character array, store the present counter of temp variables
+	in it and increase the global temporary variable counter.
+	Here, I typecast temp into a string and return a string depending on the counter
+	globally at that point.
+	*
+	*/
+	string new_temp()
+	{
+		char temp[10];
+		sprintf(temp, "%d", temp_variable_count); 
+		temp_variable_count++;
+		string s(temp);
+		return "T-" + s;  
 	}
- 	ofstream fout;
+ 	ofstream file_output;
  	stack<string> s;
 %}
 
-%union{
+%union
+{
 	int assop, i;
-	struct place_t* place;
+	struct place_of_var* place;
 	char* id;
 	char* relop;
 }
 
-%token MAIN IF ELSE WHILE DEC
+%token MAIN IF ELSE WHILE DECIMAL SWITCH CASE DEFAULT
 %token <id> ID
 %token <id> INTEGER
 %token <relop> RELOP
-%nonassoc '(' ')'
-%nonassoc '{' '}'
-%nonassoc ';'
-%left OR
-%left AND
-%left NOT
-%left '+' '-'
-%left '*' '/'
-%type <place> EXPR STMT STMTS PROGRAM BOOL BLOCK
+%nonassoc '(' ')' 				//no association
+%nonassoc '{' '}' 				//no association
+%nonassoc ';' 					//no association
+%left OR 						//left associativity
+%left AND 						//left associativity
+%left NOT 						//left associativity
+%left '+' '-' 					//left associativity
+%left '*' '/' 					//left associativity
+%type <place> EXPRESSION STATEMENT STATEMENTS PROGRAM BOOL BLOCK CASE_LIST DEFAULT_OPT SINGLE_CASE
 %start PROGRAM
 
 %%
 
-PROGRAM: MAIN '{' STMTS '}' { fout << "halt" << endl; printf("Ended code generation!\n"); }
+PROGRAM: MAIN '{' STATEMENTS '}'
+	{ 
+		file_output << "halt" << endl; 
+		printf("Code generation Completed!!\n"); 
+	}
 	;
 
-STMTS: STMT ';'
+STATEMENTS: STATEMENT ';'
 	| BLOCK
-	| STMT ';' STMTS 
-	| BLOCK STMTS
+	| STATEMENT ';' STATEMENTS 
+	| BLOCK STATEMENTS
 	;
 
-STMT: DEC ID {
-		symbol_t entry; entry.lineno = yylineno; entry.type = "int";
-		string tmp($2);
-		sym_table[tmp].push_back(entry);
+STATEMENT: DECIMAL ID {
+		sym_table_entry entry; 
+		entry.lineno = yylineno; 
+		entry.type = "int";
+		string temp($2);
+		sym_table[temp].push_back(entry);
 	}
-	| ID '=' EXPR {
-		string tmp($1);
+	| ID '=' EXPRESSION 
+	{
+		string temp($1);
 		string place3($3->place);
-		fout << tmp << " = " << place3 << endl;
+		file_output << temp << " = " << place3 << endl;
 	}
 	;
 
-EXPR: EXPR '+' EXPR {
+EXPRESSION: EXPRESSION '+' EXPRESSION 
+	{
 		string s1($1->place), s2($3->place);
-		string tmp = new_temp();
-		strcpy($$->place, tmp.c_str());
-		fout << tmp << " = " << s1 << " + " << s2 << endl;
+		string temp = new_temp();
+		strcpy($$->place, temp.c_str());
+		file_output << temp << " = " << s1 << " + " << s2 << endl;
 	}
-	| EXPR '*' EXPR {
+	| EXPRESSION '*' EXPRESSION 
+	{
 		string s1($1->place), s2($3->place);
-		string tmp = new_temp();
-		strcpy($$->place, tmp.c_str());
-		fout << tmp << " = " << s1 << " * " << s2 << endl;
+		string temp = new_temp();
+		strcpy($$->place, temp.c_str());
+		file_output << temp << " = " << s1 << " * " << s2 << endl;
 	}
-	| '(' EXPR ')' {
+	| '(' EXPRESSION ')' 
+	{
 		strcpy($$->place, $2->place);
 	}
-	| '-' EXPR {
+	| '-' EXPRESSION 
+	{
 		string s1($2->place);
-		string tmp = new_temp();
-		strcpy($$->place, tmp.c_str());
-		fout << tmp << " = -" << s1 << endl;
+		string temp = new_temp();
+		strcpy($$->place, temp.c_str());
+		file_output << temp << " = -" << s1 << endl;
 	}
-	| ID {
+	| ID 
+	{
 		strcpy($$->place, $1);
 	}
-	| INTEGER {
+	| INTEGER 
+	{
 		strcpy($$->place, $1);
 	}
 	;
 
-BLOCK: IF '(' BOOL ')' { 
+BLOCK: IF '(' BOOL ')' 
+	{ 
 		s.push(new_label()); 
-		string tmp($3->place);
-		fout << "if " << tmp << " == 0 goto " << s.top() << endl;  
-	} '{' STMTS '}' {
-		fout << s.top() << ": "; s.pop();
+		string temp($3->place);
+		file_output << "IF " << temp << " == 0 GOTO " << s.top() << endl;  
+	} '{' STATEMENTS '}' 
+	{
+		file_output << s.top() << ": "; 
+		s.pop();
 	} 
 	
-	| IF '(' BOOL ')' { 
+	| IF '(' BOOL ')' 
+	{ 
 		s.push(new_label()); 
-		string tmp($3->place);
-		fout << "if " << tmp << " == 0 goto " << s.top() << endl; 
-	} '{' STMTS '}' ELSE { 
-		string tmp = s.top(); s.pop();
+		string temp($3->place);
+		file_output << "IF " << temp << " == 0 GOTO " << s.top() << endl; 
+	} '{' STATEMENTS '}' ELSE 
+	{ 
+		string temp = s.top(); 
+		s.pop();
 		s.push(new_label());
-		fout << "goto " << s.top() << endl;
-		fout << tmp << ": "; 
-	} '{' STMTS '}' { 
-		fout << s.top() << ": "; s.pop();
+		file_output << "GOTO " << s.top() << endl;
+		file_output << temp << ": "; 
+	} '{' STATEMENTS '}' 
+	{ 
+		file_output << s.top() << ": "; 
+		s.pop();
 	}
 	
-	| WHILE {
+	| WHILE 
+	{
 		s.push(new_label());
-		fout << s.top() << ": ";
-	} '(' BOOL ')' {
+		file_output << s.top() << ": ";
+	} '(' BOOL ')' 
+	{
 		s.push(new_label()); 
-		string tmp($4->place);
-		fout << "if " << tmp << " == 0 goto " << s.top() << endl;  
-	} '{' STMTS '}' {
+		string temp($4->place);
+		file_output << "IF " << temp << " == 0 GOTO " << s.top() << endl;  
+	} '{' STATEMENTS '}' 
+	{
 		string begin_label, end_label;
 		end_label = s.top(); s.pop();
 		begin_label = s.top(); s.pop();
-		fout << "goto " << begin_label << endl;
-		fout << end_label << ": ";
+		file_output << "GOTO " << begin_label << endl;
+		file_output << end_label << ": ";
+	}
+	| SWITCH '(' EXPRESSION ')' '{' CASE_LIST DEFAULT_OPT CASE_LIST '}'
+	{
+		s.push(new_label());
+		file_output << s.top() << ": ";
 	}
 	;
+DEFAULT_OPT: DEFAULT '(' DECIMAL ')'':'STATEMENT
+	;
+CASE_LIST: SINGLE_CASE CASE_LIST
+	;
+SINGLE_CASE: CASE '(' DECIMAL ')'':' STATEMENT
+	;
 
-BOOL: BOOL AND BOOL {
+BOOL: BOOL AND BOOL 
+	{
 		string s1($1->place), s2($3->place);
-		string tmp = new_temp();
-		strcpy($$->place, tmp.c_str());
-		fout << tmp << " = " << s1 << " and " << s2 << endl;
+		string temp = new_temp();
+		strcpy($$->place, temp.c_str());
+		file_output << temp << " = " << s1 << " AND " << s2 << endl;
 	}
-	| BOOL OR BOOL {
+	| BOOL OR BOOL 
+	{
 		string s1($1->place), s2($3->place);
-		string tmp = new_temp();
-		strcpy($$->place, tmp.c_str());
-		fout << tmp << " = " << s1 << " or " << s2 << endl;
+		string temp = new_temp();
+		strcpy($$->place, temp.c_str());
+		file_output << temp << " = " << s1 << " OR " << s2 << endl;
 	}
-	| NOT BOOL {
+	| NOT BOOL 
+	{
 		string s1($2->place);
-		string tmp = new_temp();
-		strcpy($$->place, tmp.c_str());
-		fout << tmp << " = not" << s1 << endl;
+		string temp = new_temp();
+		strcpy($$->place, temp.c_str());
+		file_output << temp << " = NOT" << s1 << endl;
 	}
-	| EXPR RELOP EXPR {
-		string tmp($2);
+	| EXPRESSION RELOP EXPRESSION 
+	{
+		string temp($2);
 		string false_label = new_label(), end_label = new_label();
-		string tmp1($1->place), tmp2($3->place);
+		string temp1($1->place), temp2($3->place);
 		string place0 = new_temp();
 		strcpy($$->place, place0.c_str());
-		fout << "if " << tmp1 << " " << tmp << " " << tmp2 << " goto " << false_label << endl;
-		fout << place0 << " = 0" << endl;
-		fout << "goto " << end_label << endl;
-		fout << false_label << ": ";
-		fout << place0 << " = 1" << endl;
-		fout << end_label << ": ";
+		file_output << "IF " << temp1 << " " << temp << " " << temp2 << " GOTO " << false_label << endl;
+		file_output << place0 << " = 0" << endl;
+		file_output << "GOTO " << end_label << endl;
+		file_output << false_label << ": ";
+		file_output << place0 << " = 1" << endl;
+		file_output << end_label << ": ";
 	}
 
 %%
 
-int main(int argc,char *argv[]){
-	if(argc!=2){
-		printf("Number of input files not proper");
+int main(int argc,char *argv[])
+{
+	if(argc!=2)
+	{
+		printf("Usage: %s [filename]",argv[0]);
 		exit(0);
 	}
 	yyin = fopen(argv[1],"r");
-	if(yyin==NULL){
-		perror("Input file not opened");
-		exit(0);
+	if(yyin==NULL)
+	{
+		perror("Input file error");
+		exit(1);
 	}
-	fout.open("output.txt", ios::out);
+	file_output.open("output.txt", ios::out);
 	yyparse();
-	fout.close();
+	file_output.close();
 	return 0;
 }

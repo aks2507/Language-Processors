@@ -62,84 +62,49 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "parser.y" /* yacc.c:339  */
+#line 1 "backpatch.y" /* yacc.c:339  */
 
-	#include <iostream>
-	#include <algorithm>
+	#include "h1.h"
+	#include <bits/stdc++.h>
 	#include <string>
-	#include <stack>
 	#include <fstream>
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <map>
-	#include <vector>
 	using namespace std;
-	extern int yylineno;
-	extern int yylex();
 	extern FILE* yyin;
-
-	void yyerror (const char *s) {
-   		fprintf(stderr, "%s\n", s);
- 	}	
-
-	//The symbol table structure that stores the line number and type
- 	struct sym_table_entry
+	int yyerror(string s);
+	int temp_counter = 1,line_no = 0;
+	extern int yylex();
+	struct lnode
 	{
- 		int lineno;
- 		string type;
- 	};
+		int lineno;
+		struct lnode* next;
+	};
 	
-	//The structure that stores the 
- 	struct place_of_var
+	struct Expression
 	{
- 		char place[10];
- 	};
-
- 	map<string, vector<sym_table_entry> > sym_table;       //The symbol table
- 	int label_count = 0, temp_variable_count = 0;
-
-	/*
-	*
-	*
-	This function creates a new label
-	We create a new character array, store the present counter of labels
-	in it and increase the global label counter.
-	Here, I typecast temp into a string and return a string depending on the counter
-	globally at that point.
-	*
-	*/
- 	string new_label()
+		string temp_name;
+		struct lnode *truelist,*falselist,*nextlist;
+		int type;
+	};
+	
+	struct sentinel
 	{
-		char temp[10];
-		sprintf(temp, "%d", label_count); 
-		label_count++;
-		string s(temp);
-		return "L-" + s;  
-	}
+		int q;
+	};
+	
+	string new_temp();
+	
+	ofstream fout;
+	
+	void backpatch(struct lnode* l,int off);
+	
+	struct lnode* makelist();
+	
+	struct lnode* merge(struct lnode* l1,struct lnode* l2);
+	
+	
+	struct symbol Symbol_table[NHASH];
 
-	/*
-	*
-	*
-	This function creates a new temporary variable
-	We create a new character array, store the present counter of temp variables
-	in it and increase the global temporary variable counter.
-	Here, I typecast temp into a string and return a string depending on the counter
-	globally at that point.
-	*
-	*/
-	string new_temp()
-	{
-		char temp[10];
-		sprintf(temp, "%d", temp_variable_count); 
-		temp_variable_count++;
-		string s(temp);
-		return "T-" + s;  
-	}
- 	ofstream file_output;
- 	stack<string> s;
-
-#line 143 "y.tab.c" /* yacc.c:339  */
+#line 108 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -174,47 +139,55 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    MAIN = 258,
-    IF = 259,
-    ELSE = 260,
-    WHILE = 261,
-    DECIMAL = 262,
-    SWITCH = 263,
-    ID = 264,
-    INTEGER = 265,
-    RELOP = 266,
-    OR = 267,
-    AND = 268,
-    NOT = 269
+    ASSGN = 258,
+    CMP = 259,
+    LOG = 260,
+    BIT = 261,
+    IF = 262,
+    ELSE = 263,
+    WHILE = 264,
+    FOR = 265,
+    ID = 266,
+    INTEGER = 267,
+    REAL = 268,
+    INT = 269,
+    FLOAT = 270,
+    MAIN = 271,
+    ERR = 272
   };
 #endif
 /* Tokens.  */
-#define MAIN 258
-#define IF 259
-#define ELSE 260
-#define WHILE 261
-#define DECIMAL 262
-#define SWITCH 263
-#define ID 264
-#define INTEGER 265
-#define RELOP 266
-#define OR 267
-#define AND 268
-#define NOT 269
+#define ASSGN 258
+#define CMP 259
+#define LOG 260
+#define BIT 261
+#define IF 262
+#define ELSE 263
+#define WHILE 264
+#define FOR 265
+#define ID 266
+#define INTEGER 267
+#define REAL 268
+#define INT 269
+#define FLOAT 270
+#define MAIN 271
+#define ERR 272
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 79 "parser.y" /* yacc.c:355  */
+#line 44 "backpatch.y" /* yacc.c:355  */
 
-	int assop, i;
-	struct place_of_var* place;
-	char* id;
-	char* relop;
+	struct symbol* s;
+	int d;
+	float f;
+	struct Expression* e;
+	int cmp,log,bit,assgn;
+	struct sentinel *M;
 
-#line 218 "y.tab.c" /* yacc.c:355  */
+#line 191 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -231,7 +204,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 235 "y.tab.c" /* yacc.c:358  */
+#line 208 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -473,21 +446,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   64
+#define YYLAST   133
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  25
+#define YYNTOKENS  30
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  12
+#define YYNNTS  7
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  26
+#define YYNRULES  29
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  63
+#define YYNSTATES  68
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   269
+#define YYMAXUTOK   272
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -499,18 +472,16 @@ static const yytype_uint8 yytranslate[] =
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      12,    13,    22,    20,     2,    21,     2,    23,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    16,
-       2,    24,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,    13,     2,     2,
+      25,    26,    10,     8,    29,     9,     2,    11,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     3,
+       2,     2,     2,     2,    12,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    14,     2,    15,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,    27,     2,    28,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -521,17 +492,20 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    17,    18,    19
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     1,     2,     4,     5,
+       6,     7,    14,    15,    16,    17,    18,    19,    20,    21,
+      22,    23,    24
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
-       0,   103,   103,   110,   111,   112,   113,   116,   123,   131,
-     138,   145,   149,   156,   160,   167,   166,   178,   183,   177,
-     196,   200,   195,   214,   221,   228,   235
+       0,    77,    77,    78,    85,    92,    99,   106,   113,   120,
+     121,   122,   123,   145,   177,   199,   220,   222,   224,   227,
+     236,   243,   249,   257,   259,   260,   262,   266,   269,   270
 };
 #endif
 
@@ -540,11 +514,11 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "MAIN", "IF", "ELSE", "WHILE", "DECIMAL",
-  "SWITCH", "ID", "INTEGER", "RELOP", "'('", "')'", "'{'", "'}'", "';'",
-  "OR", "AND", "NOT", "'+'", "'-'", "'*'", "'/'", "'='", "$accept",
-  "PROGRAM", "STATEMENTS", "STATEMENT", "EXPRESSION", "BLOCK", "$@1",
-  "$@2", "$@3", "$@4", "$@5", "BOOL", YY_NULLPTR
+  "$end", "error", "$undefined", "';'", "ASSGN", "CMP", "LOG", "BIT",
+  "'+'", "'-'", "'*'", "'/'", "'@'", "'%'", "IF", "ELSE", "WHILE", "FOR",
+  "ID", "INTEGER", "REAL", "INT", "FLOAT", "MAIN", "ERR", "'('", "')'",
+  "'{'", "'}'", "','", "$accept", "exp", "stmt", "idlist", "sent",
+  "next_sent", "calclist", YY_NULLPTR
 };
 #endif
 
@@ -553,16 +527,16 @@ static const char *const yytname[] =
    (internal) symbol number NUM (which must be that of a token).  */
 static const yytype_uint16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,    40,    41,   123,   125,    59,   267,   268,   269,
-      43,    45,    42,    47,    61
+       0,   256,   257,    59,   258,   259,   260,   261,    43,    45,
+      42,    47,    64,    37,   262,   263,   264,   265,   266,   267,
+     268,   269,   270,   271,   272,    40,    41,   123,   125,    44
 };
 # endif
 
-#define YYPACT_NINF -18
+#define YYPACT_NINF -24
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-18)))
+  (!!((Yystate) == (-24)))
 
 #define YYTABLE_NINF -1
 
@@ -573,13 +547,13 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       1,    -2,    16,    44,   -18,    11,   -18,    12,     4,    25,
-      15,    44,    20,    23,   -18,    24,   -18,    44,   -18,   -18,
-     -18,    24,    20,    24,    -9,     9,    20,   -17,   -18,    -5,
-     -18,    21,    24,    24,    24,   -18,    20,    20,    39,   -18,
-     -17,    21,   -18,    30,    32,    29,   -18,   -18,    44,    44,
-      40,    43,    45,    44,   -18,    50,    46,   -18,   -18,    48,
-      44,    49,   -18
+     -20,   -17,    22,    82,   -24,    10,   -24,    20,   -24,   -24,
+      11,    11,    65,   103,    -1,    65,    13,    65,    -3,   -24,
+     -24,    36,    65,   -24,    65,    65,    65,    65,    65,    65,
+      65,   -24,   -24,    45,    65,   103,    11,   -24,    57,    65,
+     116,   120,   120,     8,     8,     8,   -24,    82,   -24,    67,
+     -24,   110,   -24,     9,   -24,    82,    12,     2,    82,    18,
+       4,   -24,   -24,   -24,    32,    82,     6,   -24
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -587,27 +561,25 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     1,     0,    20,     0,     0,     0,
-       0,     4,     0,     0,     7,     0,     2,     3,     6,    13,
-      14,     0,     0,     0,     0,     0,     0,     8,     5,     0,
-      25,    12,     0,     0,     0,    15,     0,     0,     0,    11,
-      26,     9,    10,     0,     0,    24,    23,    21,     0,     0,
-       0,     0,     0,     0,    16,     0,     0,    18,    22,     0,
-       0,     0,    19
+      28,     0,     0,     2,     1,     0,    26,    11,    16,    17,
+       0,     0,     2,    23,     0,     2,     0,     2,    24,     9,
+      10,     0,     2,    26,     2,     2,     2,     2,     2,     2,
+       2,    26,    29,     0,     2,    12,     0,    18,    13,     2,
+      14,     3,     4,     6,     5,     7,     8,     2,    26,     0,
+      25,    15,    19,     0,    26,     2,     0,     0,     2,    21,
+       0,    27,    22,    26,     0,     2,     0,    20
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -18,   -18,   -11,   -18,   -14,   -18,   -18,   -18,   -18,   -18,
-     -18,   -12
+     -24,   -11,    34,     1,   -23,   -24,   -24
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     9,    10,    24,    11,    43,    44,    59,    13,
-      50,    25
+      -1,    13,    14,    19,    16,    63,     2
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -615,53 +587,67 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      18,    27,    32,    33,     1,    34,    28,    29,    39,    31,
-      30,    33,     3,    34,    38,    33,     4,    34,    40,    41,
-      42,    14,    35,    12,    45,    46,    36,    37,    15,    19,
-      20,    17,    21,    19,    20,    26,    21,    51,    52,    22,
-      16,    23,    56,    34,    48,    23,    49,    37,     5,    61,
-       6,     7,    47,     8,    53,    57,    36,    37,    54,     0,
-      55,    58,    60,     0,    62
+      39,    21,    31,     1,    33,    31,    35,    31,    47,    31,
+       3,    38,    20,    40,    41,    42,    43,    44,    45,    46,
+      29,    30,     4,    49,    17,    53,    36,    32,    51,    18,
+      59,    56,    62,    61,    67,    15,    55,    50,    34,    58,
+      64,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      22,    23,    24,    25,    26,    27,    28,    29,    30,    65,
+       0,     0,    37,    23,    24,    25,    26,    27,    28,    29,
+      30,    48,    22,    23,    24,    25,    26,    27,    28,    29,
+      30,    52,     0,     7,     8,     9,    10,    11,     0,    57,
+      12,     0,    60,    54,     0,     0,     5,     0,     6,    66,
+       7,     8,     9,    10,    11,     0,     0,    12,    22,    23,
+      24,    25,    26,    27,    28,    29,    30,    24,    25,    26,
+      27,    28,    29,    30,    25,    26,    27,    28,    29,    30,
+      27,    28,    29,    30
 };
 
 static const yytype_int8 yycheck[] =
 {
-      11,    15,    11,    20,     3,    22,    17,    21,    13,    23,
-      22,    20,    14,    22,    26,    20,     0,    22,    32,    33,
-      34,     9,    13,    12,    36,    37,    17,    18,    24,     9,
-      10,    16,    12,     9,    10,    12,    12,    48,    49,    19,
-      15,    21,    53,    22,    14,    21,    14,    18,     4,    60,
-       6,     7,    13,     9,    14,     5,    17,    18,    15,    -1,
-      15,    15,    14,    -1,    15
+      23,    12,     3,    23,    15,     3,    17,     3,    31,     3,
+      27,    22,    11,    24,    25,    26,    27,    28,    29,    30,
+      12,    13,     0,    34,     4,    48,    29,    28,    39,    18,
+      28,    54,    28,    15,    28,    25,    27,    36,    25,    27,
+      63,     5,     6,     7,     8,     9,    10,    11,    12,    13,
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    27,
+      -1,    -1,    26,     6,     7,     8,     9,    10,    11,    12,
+      13,    26,     5,     6,     7,     8,     9,    10,    11,    12,
+      13,    47,    -1,    18,    19,    20,    21,    22,    -1,    55,
+      25,    -1,    58,    26,    -1,    -1,    14,    -1,    16,    65,
+      18,    19,    20,    21,    22,    -1,    -1,    25,     5,     6,
+       7,     8,     9,    10,    11,    12,    13,     7,     8,     9,
+      10,    11,    12,    13,     8,     9,    10,    11,    12,    13,
+      10,    11,    12,    13
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,    26,    14,     0,     4,     6,     7,     9,    27,
-      28,    30,    12,    34,     9,    24,    15,    16,    27,     9,
-      10,    12,    19,    21,    29,    36,    12,    29,    27,    29,
-      36,    29,    11,    20,    22,    13,    17,    18,    36,    13,
-      29,    29,    29,    31,    32,    36,    36,    13,    14,    14,
-      35,    27,    27,    14,    15,    15,    27,     5,    15,    33,
-      14,    27,    15
+       0,    23,    36,    27,     0,    14,    16,    18,    19,    20,
+      21,    22,    25,    31,    32,    25,    34,     4,    18,    33,
+      33,    31,     5,     6,     7,     8,     9,    10,    11,    12,
+      13,     3,    28,    31,    25,    31,    29,    26,    31,    34,
+      31,    31,    31,    31,    31,    31,    31,    34,    26,    31,
+      33,    31,    32,    34,    26,    27,    34,    32,    27,    28,
+      32,    15,    28,    35,    34,    27,    32,    28
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    25,    26,    27,    27,    27,    27,    28,    28,    29,
-      29,    29,    29,    29,    29,    31,    30,    32,    33,    30,
-      34,    35,    30,    36,    36,    36,    36
+       0,    30,    31,    31,    31,    31,    31,    31,    31,    31,
+      31,    31,    31,    31,    31,    31,    31,    31,    31,    32,
+      32,    32,    32,    32,    33,    33,    34,    35,    36,    36
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     4,     2,     1,     3,     2,     2,     3,     3,
-       3,     3,     2,     1,     1,     0,     8,     0,     0,    13,
-       0,     0,     9,     3,     3,     2,     3
+       0,     2,     0,     3,     3,     3,     3,     3,     3,     2,
+       2,     1,     3,     3,     3,     4,     1,     1,     3,     4,
+      14,     8,     9,     1,     1,     3,     0,     0,     0,     4
 };
 
 
@@ -1338,227 +1324,324 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 104 "parser.y" /* yacc.c:1646  */
-    { 
-		file_output << "halt" << endl; 
-		printf("Code generation Completed!!\n"); 
-	}
-#line 1347 "y.tab.c" /* yacc.c:1646  */
+#line 77 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.e) = NULL;}
+#line 1330 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 3:
+#line 78 "backpatch.y" /* yacc.c:1646  */
+    {
+   	(yyval.e) = new Expression;
+   	(yyval.e)->temp_name = new_temp();
+   	fout<<line_no<<" : "<<(yyval.e)->temp_name<<" = "<<(yyvsp[-2].e)->temp_name<<"+"<<(yyvsp[0].e)->temp_name<<endl;
+   	line_no++;
+   	(yyval.e)->truelist = (yyval.e)->falselist = NULL;
+   }
+#line 1342 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 4:
+#line 85 "backpatch.y" /* yacc.c:1646  */
+    {
+   	(yyval.e) = new Expression;
+   	(yyval.e)->temp_name = new_temp();
+   	fout<<line_no<<" : "<<(yyval.e)->temp_name<<" = "<<(yyvsp[-2].e)->temp_name<<"-"<<(yyvsp[0].e)->temp_name<<endl;
+   	line_no++;
+   	(yyval.e)->truelist = (yyval.e)->falselist = NULL;
+   }
+#line 1354 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 5:
+#line 92 "backpatch.y" /* yacc.c:1646  */
+    {
+   	(yyval.e) = new Expression;
+   	(yyval.e)->temp_name = new_temp();
+   	fout<<line_no<<" : "<<(yyval.e)->temp_name<<" = "<<(yyvsp[-2].e)->temp_name<<"/"<<(yyvsp[0].e)->temp_name<<endl;
+   	line_no++;
+   	(yyval.e)->truelist = (yyval.e)->falselist = NULL;
+   }
+#line 1366 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 6:
+#line 99 "backpatch.y" /* yacc.c:1646  */
+    {
+   	(yyval.e) = new Expression;
+   	(yyval.e)->temp_name = new_temp();
+   	fout<<line_no<<" : "<<(yyval.e)->temp_name<<" = "<<(yyvsp[-2].e)->temp_name<<"*"<<(yyvsp[0].e)->temp_name<<endl;
+   	line_no++;
+   	(yyval.e)->truelist = (yyval.e)->falselist = NULL;
+   }
+#line 1378 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 116 "parser.y" /* yacc.c:1646  */
+#line 106 "backpatch.y" /* yacc.c:1646  */
     {
-		sym_table_entry entry; 
-		entry.lineno = yylineno; 
-		entry.type = "int";
-		string temp((yyvsp[0].id));
-		sym_table[temp].push_back(entry);
-	}
-#line 1359 "y.tab.c" /* yacc.c:1646  */
+   	(yyval.e) = new Expression;
+   	(yyval.e)->temp_name = new_temp();
+   	fout<<line_no<<" : "<<(yyval.e)->temp_name<<" = "<<(yyvsp[-2].e)->temp_name<<"@"<<(yyvsp[0].e)->temp_name<<endl;
+   	line_no++;
+   	(yyval.e)->truelist = (yyval.e)->falselist = NULL;
+   }
+#line 1390 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 124 "parser.y" /* yacc.c:1646  */
+#line 113 "backpatch.y" /* yacc.c:1646  */
     {
-		string temp((yyvsp[-2].id));
-		string place3((yyvsp[0].place)->place);
-		file_output << temp << " = " << place3 << endl;
-	}
-#line 1369 "y.tab.c" /* yacc.c:1646  */
+   	(yyval.e) = new Expression;
+   	(yyval.e)->temp_name = new_temp();
+   	fout<<line_no<<" : "<<(yyval.e)->temp_name<<" = "<<(yyvsp[-2].e)->temp_name<<"%"<<(yyvsp[0].e)->temp_name<<endl;
+   	line_no++;
+   	(yyval.e)->truelist = (yyval.e)->falselist = NULL;
+   }
+#line 1402 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 132 "parser.y" /* yacc.c:1646  */
-    {
-		string s1((yyvsp[-2].place)->place), s2((yyvsp[0].place)->place);
-		string temp = new_temp();
-		strcpy((yyval.place)->place, temp.c_str());
-		file_output << temp << " = " << s1 << " + " << s2 << endl;
-	}
-#line 1380 "y.tab.c" /* yacc.c:1646  */
+#line 120 "backpatch.y" /* yacc.c:1646  */
+    {(yyvsp[0].e)->type = 1;(yyval.e) = (yyvsp[0].e);}
+#line 1408 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 139 "parser.y" /* yacc.c:1646  */
-    {
-		string s1((yyvsp[-2].place)->place), s2((yyvsp[0].place)->place);
-		string temp = new_temp();
-		strcpy((yyval.place)->place, temp.c_str());
-		file_output << temp << " = " << s1 << " * " << s2 << endl;
-	}
-#line 1391 "y.tab.c" /* yacc.c:1646  */
+#line 121 "backpatch.y" /* yacc.c:1646  */
+    {(yyvsp[0].e)->type = 2;(yyval.e) = (yyvsp[0].e);}
+#line 1414 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 146 "parser.y" /* yacc.c:1646  */
-    {
-		strcpy((yyval.place)->place, (yyvsp[-1].place)->place);
-	}
-#line 1399 "y.tab.c" /* yacc.c:1646  */
+#line 122 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.e) = new Expression;(yyval.e)->temp_name=(yyvsp[0].s)->name;(yyval.e)->type = (yyvsp[0].s)->type;}
+#line 1420 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 150 "parser.y" /* yacc.c:1646  */
-    {
-		string s1((yyvsp[0].place)->place);
-		string temp = new_temp();
-		strcpy((yyval.place)->place, temp.c_str());
-		file_output << temp << " = -" << s1 << endl;
-	}
-#line 1410 "y.tab.c" /* yacc.c:1646  */
+#line 123 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.e) = new Expression;string t;
+   switch((yyvsp[-1].assgn))
+   {
+	
+   	case 1:
+   	fout<<line_no<<" : "<<(yyvsp[-2].s)->name<<" = "<<(yyvsp[0].e)->temp_name<<endl;
+   	break;
+   	case 2:
+   	fout<<line_no<<" : "<<(t = new_temp())<<" = "<<(yyvsp[-2].s)->name<<"+"<<(yyvsp[0].e)->temp_name<<endl;
+   	break;
+   	case 3:
+   	fout<<line_no<<" : "<<(t = new_temp())<<" = "<<(yyvsp[-2].s)->name<<"-"<<(yyvsp[0].e)->temp_name<<endl;
+   	break;
+   	case 4:
+   	fout<<line_no<<" : "<<(t = new_temp())<<" = "<<(yyvsp[-2].s)->name<<"*"<<(yyvsp[0].e)->temp_name<<endl;
+   	break;
+   	case 5:
+   	fout<<line_no<<" : "<<(t = new_temp())<<" = "<<(yyvsp[-2].s)->name<<"/"<<(yyvsp[0].e)->temp_name<<endl;
+   	break;
+   	
+   }line_no++;if((yyvsp[-1].assgn)!=1){ fout<<line_no<<" : "<<(yyvsp[-2].s)->name<<" = "<<t<<endl;line_no++;}
+   }
+#line 1447 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 157 "parser.y" /* yacc.c:1646  */
+#line 145 "backpatch.y" /* yacc.c:1646  */
     {
-		strcpy((yyval.place)->place, (yyvsp[0].id));
-	}
-#line 1418 "y.tab.c" /* yacc.c:1646  */
+   	string ch;
+   	switch((yyvsp[-1].cmp))
+   	{
+   		case 1:
+   		ch = "==";
+   		break;
+   		case 2:
+   		ch = ">";
+   		break;
+   		case 3:
+   		ch = "<";
+   		break;
+   		case 4:
+   		ch = ">=";
+   		break;
+   		case 5:
+   		ch = "<=";
+   		break;
+   		case 6:
+   		ch = "!=";
+   		break;
+   		
+   	}
+   	(yyval.e) = new Expression();
+   	fout<<line_no<<" : "<<"if ("<<(yyvsp[-2].e)->temp_name<<ch<<(yyvsp[0].e)->temp_name<<") goto";
+   	(yyval.e)->truelist = makelist();line_no++;
+   	fout<<"    \n";
+   	fout<<line_no<<" : "<<"goto";
+   	(yyval.e)->falselist = makelist();fout<<"   \n";
+   	line_no++;
+   }
+#line 1484 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 161 "parser.y" /* yacc.c:1646  */
+#line 177 "backpatch.y" /* yacc.c:1646  */
     {
-		strcpy((yyval.place)->place, (yyvsp[0].id));
-	}
-#line 1426 "y.tab.c" /* yacc.c:1646  */
+   	string ch;
+   	switch((yyvsp[-1].bit))
+   	{
+   		case 1:
+   		ch = "|";
+   		break;
+   		case 2:
+   		ch = "&";
+   		break;
+   		case 3:
+   		ch = "~";
+   		break;
+   		
+   	}
+   	(yyval.e) = new Expression;
+   	(yyval.e)->temp_name = new_temp();
+   	fout<<line_no<<" : ";
+   	if((yyvsp[-2].e)!=NULL)
+   	fout<<(yyvsp[-2].e)->temp_name;
+   	fout<<ch<<(yyvsp[0].e)->temp_name<<endl;line_no++;
+   }
+#line 1511 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 167 "parser.y" /* yacc.c:1646  */
-    { 
-		s.push(new_label()); 
-		string temp((yyvsp[-1].place)->place);
-		file_output << "IF " << temp << " == 0 GOTO " << s.top() << endl;  
-	}
-#line 1436 "y.tab.c" /* yacc.c:1646  */
+#line 199 "backpatch.y" /* yacc.c:1646  */
+    {
+   	string ch;
+   	(yyval.e) = new Expression;
+   	switch((yyvsp[-2].log))
+   	{
+   		case 1:
+   		backpatch((yyvsp[-3].e)->truelist,(yyvsp[-1].M)->q);
+   		(yyval.e)->truelist = (yyvsp[0].e)->truelist;
+   		(yyval.e)->falselist = merge((yyvsp[-3].e)->falselist,(yyvsp[0].e)->falselist);
+   		break;
+   		case 2:
+   		backpatch((yyvsp[-3].e)->falselist,(yyvsp[-1].M)->q);
+   		(yyval.e)->falselist = (yyvsp[0].e)->falselist;
+   		(yyval.e)->truelist = merge((yyvsp[-3].e)->truelist,(yyvsp[0].e)->truelist);
+   		break;
+   		case 3:
+   		(yyval.e)->truelist = (yyvsp[0].e)->falselist;
+   		(yyval.e)->falselist = (yyvsp[0].e)->truelist;
+   		break;
+   	}
+   }
+#line 1537 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 172 "parser.y" /* yacc.c:1646  */
-    {
-		file_output << s.top() << ": "; 
-		s.pop();
-	}
-#line 1445 "y.tab.c" /* yacc.c:1646  */
+#line 220 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.e) = new Expression;(yyval.e)->temp_name = to_string((yyvsp[0].d));
+   (yyval.e)->type = 1;cout<<"Number is ==***************"<<(yyvsp[0].d)<<endl;}
+#line 1544 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 178 "parser.y" /* yacc.c:1646  */
-    { 
-		s.push(new_label()); 
-		string temp((yyvsp[-1].place)->place);
-		file_output << "IF " << temp << " == 0 GOTO " << s.top() << endl; 
-	}
-#line 1455 "y.tab.c" /* yacc.c:1646  */
+#line 222 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.e) = new Expression;(yyval.e)->temp_name = to_string((yyvsp[0].f));
+   (yyval.e)->type = 1;}
+#line 1551 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 183 "parser.y" /* yacc.c:1646  */
-    { 
-		string temp = s.top(); 
-		s.pop();
-		s.push(new_label());
-		file_output << "GOTO " << s.top() << endl;
-		file_output << temp << ": "; 
-	}
-#line 1467 "y.tab.c" /* yacc.c:1646  */
+#line 224 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.e) = (yyvsp[-1].e);}
+#line 1557 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 190 "parser.y" /* yacc.c:1646  */
-    { 
-		file_output << s.top() << ": "; 
-		s.pop();
-	}
-#line 1476 "y.tab.c" /* yacc.c:1646  */
+#line 227 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.e) = new Expression;if((yyvsp[0].e)==NULL)
+    {(yyval.e)->nextlist = (yyvsp[-3].e)->nextlist;backpatch((yyval.e)->nextlist,(yyvsp[-1].M)->q);}else {backpatch((yyvsp[-3].e)->nextlist,(yyvsp[-1].M)->q);
+    (yyval.e)->nextlist = (yyvsp[0].e)->nextlist;
+    }
+    }
+#line 1567 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 196 "parser.y" /* yacc.c:1646  */
+#line 236 "backpatch.y" /* yacc.c:1646  */
     {
-		s.push(new_label());
-		file_output << s.top() << ": ";
-	}
-#line 1485 "y.tab.c" /* yacc.c:1646  */
+    	(yyval.e) = new Expression;
+    	backpatch((yyvsp[-11].e)->truelist,(yyvsp[-9].M)->q);
+    	backpatch((yyvsp[-11].e)->falselist,(yyvsp[-3].M)->q);
+    	(yyval.e)->nextlist = merge((yyvsp[-7].e)->nextlist,(yyvsp[-4].e)->nextlist);
+    	(yyval.e)->nextlist = merge((yyval.e)->nextlist,(yyvsp[-1].e)->nextlist);
+    }
+#line 1579 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 200 "parser.y" /* yacc.c:1646  */
+#line 244 "backpatch.y" /* yacc.c:1646  */
     {
-		s.push(new_label()); 
-		string temp((yyvsp[-1].place)->place);
-		file_output << "IF " << temp << " == 0 GOTO " << s.top() << endl;  
-	}
-#line 1495 "y.tab.c" /* yacc.c:1646  */
+    	(yyval.e) = new Expression;
+    	backpatch((yyvsp[-5].e)->truelist,(yyvsp[-3].M)->q);
+    	(yyval.e)->nextlist = merge((yyvsp[-5].e)->falselist,(yyvsp[-1].e)->nextlist);
+    }
+#line 1589 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 205 "parser.y" /* yacc.c:1646  */
+#line 250 "backpatch.y" /* yacc.c:1646  */
     {
-		string begin_label, end_label;
-		end_label = s.top(); s.pop();
-		begin_label = s.top(); s.pop();
-		file_output << "GOTO " << begin_label << endl;
-		file_output << end_label << ": ";
-	}
-#line 1507 "y.tab.c" /* yacc.c:1646  */
+    	(yyval.e) = new Expression;
+    	backpatch((yyvsp[-5].e)->truelist,(yyvsp[-3].M)->q);
+    	backpatch((yyvsp[-1].e)->nextlist,(yyvsp[-7].M)->q);
+    	(yyval.e)->nextlist = (yyvsp[-5].e)->falselist;
+    	fout<<line_no<<" : "<<"goto "<<(yyvsp[-7].M)->q<<endl;line_no++;
+    }
+#line 1601 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 215 "parser.y" /* yacc.c:1646  */
-    {
-		string s1((yyvsp[-2].place)->place), s2((yyvsp[0].place)->place);
-		string temp = new_temp();
-		strcpy((yyval.place)->place, temp.c_str());
-		file_output << temp << " = " << s1 << " AND " << s2 << endl;
-	}
-#line 1518 "y.tab.c" /* yacc.c:1646  */
+#line 257 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.e) = (yyvsp[0].e);if((yyvsp[0].e)!=NULL)(yyval.e)->nextlist = NULL;}
+#line 1607 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 222 "parser.y" /* yacc.c:1646  */
-    {
-		string s1((yyvsp[-2].place)->place), s2((yyvsp[0].place)->place);
-		string temp = new_temp();
-		strcpy((yyval.place)->place, temp.c_str());
-		file_output << temp << " = " << s1 << " OR " << s2 << endl;
-	}
-#line 1529 "y.tab.c" /* yacc.c:1646  */
+#line 259 "backpatch.y" /* yacc.c:1646  */
+    {cout<<"Here"<<endl;if((yyvsp[0].s)!=NULL){cout<<"yes\n";}cout<<"Name = "<<(yyvsp[0].s)->name<<endl;(yyval.e) = new Expression;cout<<"Upto\n";fout<<line_no<<" : "<<(yyvsp[0].s)->name<<" = 0\n";line_no++;}
+#line 1613 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 229 "parser.y" /* yacc.c:1646  */
-    {
-		string s1((yyvsp[0].place)->place);
-		string temp = new_temp();
-		strcpy((yyval.place)->place, temp.c_str());
-		file_output << temp << " = NOT" << s1 << endl;
-	}
-#line 1540 "y.tab.c" /* yacc.c:1646  */
+#line 260 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.e) = new Expression;fout<<line_no<<" : "<<(yyvsp[-2].s)->name<<" = 0\n";line_no++;}
+#line 1619 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 236 "parser.y" /* yacc.c:1646  */
-    {
-		string temp((yyvsp[-1].relop));
-		string false_label = new_label(), end_label = new_label();
-		string temp1((yyvsp[-2].place)->place), temp2((yyvsp[0].place)->place);
-		string place0 = new_temp();
-		strcpy((yyval.place)->place, place0.c_str());
-		file_output << "IF " << temp1 << " " << temp << " " << temp2 << " GOTO " << false_label << endl;
-		file_output << place0 << " = 0" << endl;
-		file_output << "GOTO " << end_label << endl;
-		file_output << false_label << ": ";
-		file_output << place0 << " = 1" << endl;
-		file_output << end_label << ": ";
+#line 262 "backpatch.y" /* yacc.c:1646  */
+    {(yyval.M) = new sentinel;
+	(yyval.M)->q = line_no;
 	}
-#line 1558 "y.tab.c" /* yacc.c:1646  */
+#line 1627 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 27:
+#line 266 "backpatch.y" /* yacc.c:1646  */
+    { (yyval.e) = new Expression;
+		fout<<line_no<<" : "<<"goto";
+		(yyval.e)->nextlist = makelist();fout<<"    \n";line_no++;}
+#line 1635 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 29:
+#line 270 "backpatch.y" /* yacc.c:1646  */
+    {cout<<"Parsing Complete!!!!"<<endl;}
+#line 1641 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1562 "y.tab.c" /* yacc.c:1646  */
+#line 1645 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1786,24 +1869,161 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 250 "parser.y" /* yacc.c:1906  */
+#line 273 "backpatch.y" /* yacc.c:1906  */
 
 
-int main(int argc,char *argv[])
+
+int Hash(char* s)
 {
-	if(argc!=2)
+	int n = strlen(s);
+	int h = 0;
+	for(int i=0;i<n;i++)
 	{
-		printf("Usage: %s [filename]",argv[0]);
-		exit(0);
+		h = (h+(int)s[i]*(i+1))%NHASH;
+	}
+	return h;
+}
+
+struct symbol* insert(char* s)
+{
+	int h = Hash(s);
+	int t = NHASH;
+	struct symbol *q;
+	while(t>0)
+	{
+		if(Symbol_table[h].name==NULL)
+		{
+			printf("Found at: %d\n",h);
+			Symbol_table[h].name = (char*)malloc(sizeof(char)*20);
+			strcpy(Symbol_table[h].name,s);
+			q = &Symbol_table[h];
+			return q;
+		}
+		h = (h+1)%NHASH;
+		t--;
+	}
+	return NULL;
+}
+
+struct symbol* search(char* s)
+{
+	int h = Hash(s);
+	int t = NHASH;
+	struct symbol *q;
+	while(t>0)
+	{
+		if(Symbol_table[h].name==NULL)
+		{
+			return NULL;
+		}
+		else if(strcmp(Symbol_table[h].name,s)==0)
+		{
+			printf("Found at: %d\n",h);
+			q = &Symbol_table[h];
+			return q;
+		}
+		h = (h+1)%NHASH;
+		t--;
+	}
+}
+
+
+string new_temp()
+{
+	string s = "t";
+	s+=to_string(temp_counter);
+	temp_counter++;
+	return s;
+}
+
+struct lnode* makelist()
+{
+	int off = fout.tellp();
+	struct lnode* t;
+	t = new lnode;
+	t->next = NULL;
+	t->lineno = off;
+	return t;
+}
+
+struct lnode* merge(struct lnode* l1,struct lnode* l2)
+{
+	struct lnode *head = NULL,*tail = NULL,*q;
+	q = l1;
+	while(q!=NULL)
+	{
+		if(head==NULL)
+		{
+			head = new lnode;
+			head->next = NULL;
+			head->lineno = q->lineno;
+			tail = head;
+		}
+		else
+		{
+			tail->next = new lnode;
+			tail->next->next = NULL;
+			tail->next->lineno = q->lineno;
+			tail = tail->next;
+		}
+		q = q->next;
+	}
+	q = l2;
+	while(q!=NULL)
+	{
+		if(head==NULL)
+		{
+			head = new lnode;
+			head->next = NULL;
+			head->lineno = q->lineno;
+			tail = head;
+		}
+		else
+		{
+			tail->next = new lnode;
+			tail->next->next = NULL;
+			tail->next->lineno = q->lineno;
+			tail = tail->next;
+		}
+		q = q->next;
+	}
+	return head;
+}
+
+void backpatch(struct lnode* l,int off)
+{
+	struct lnode* q;
+	q = l;
+	int sto = fout.tellp();
+	while(q!=NULL)
+	{
+		fout.seekp(q->lineno+1,ios::beg);
+		fout<<off;
+		q = q->next;
+	}
+	fout.seekp(0,ios::end);
+	cout<<"Returning"<<endl;
+}
+
+int main(int argc,char* argv[])
+{
+	for(int i=0;i<NHASH;i++)
+	{
+		Symbol_table[i].name = NULL;	
 	}
 	yyin = fopen(argv[1],"r");
 	if(yyin==NULL)
 	{
-		perror("Input file error");
-		exit(1);
+		perror("Could not open");
+		exit(0);
 	}
-	file_output.open("output.txt", ios::out);
+	fout.open("output.txt",ios::out);
 	yyparse();
-	file_output.close();
+	return 0;
+}
+
+int yyerror(string s)
+{
+	cout<<s;
 	return 0;
 }

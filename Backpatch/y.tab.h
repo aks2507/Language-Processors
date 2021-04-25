@@ -45,47 +45,55 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    MAIN = 258,
-    IF = 259,
-    ELSE = 260,
-    WHILE = 261,
-    DECIMAL = 262,
-    SWITCH = 263,
-    ID = 264,
-    INTEGER = 265,
-    RELOP = 266,
-    OR = 267,
-    AND = 268,
-    NOT = 269
+    ASSGN = 258,
+    CMP = 259,
+    LOG = 260,
+    BIT = 261,
+    IF = 262,
+    ELSE = 263,
+    WHILE = 264,
+    FOR = 265,
+    ID = 266,
+    INTEGER = 267,
+    REAL = 268,
+    INT = 269,
+    FLOAT = 270,
+    MAIN = 271,
+    ERR = 272
   };
 #endif
 /* Tokens.  */
-#define MAIN 258
-#define IF 259
-#define ELSE 260
-#define WHILE 261
-#define DECIMAL 262
-#define SWITCH 263
-#define ID 264
-#define INTEGER 265
-#define RELOP 266
-#define OR 267
-#define AND 268
-#define NOT 269
+#define ASSGN 258
+#define CMP 259
+#define LOG 260
+#define BIT 261
+#define IF 262
+#define ELSE 263
+#define WHILE 264
+#define FOR 265
+#define ID 266
+#define INTEGER 267
+#define REAL 268
+#define INT 269
+#define FLOAT 270
+#define MAIN 271
+#define ERR 272
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 79 "parser.y" /* yacc.c:1909  */
+#line 44 "backpatch.y" /* yacc.c:1909  */
 
-	int assop, i;
-	struct place_of_var* place;
-	char* id;
-	char* relop;
+	struct symbol* s;
+	int d;
+	float f;
+	struct Expression* e;
+	int cmp,log,bit,assgn;
+	struct sentinel *M;
 
-#line 89 "y.tab.h" /* yacc.c:1909  */
+#line 97 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
