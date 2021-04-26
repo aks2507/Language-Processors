@@ -1,0 +1,36 @@
+#include <stdio.h>
+int main()
+{
+	int x=4;
+	int y=12;
+	do
+	{
+		y=y+1;
+		do
+		{
+			y=10;
+		}while(x==7);
+	}while(x>7);
+
+    if(x>1)
+    {
+        y=7;
+    }
+    else
+    {
+        y=11;
+        x=12;
+    }
+
+    int a=12;
+	int b=77;
+	do
+	{
+		b=b-1;
+		do
+		{
+			b=2;
+		}while(a==12);
+	}while(a>3);
+	return 0;
+}
